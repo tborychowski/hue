@@ -1,0 +1,4 @@
+{
+	"ip": "<ip of your hue bridge>",
+	"username": "<token>"
+}

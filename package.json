@@ -1,0 +1,15 @@
+{
+  "name": "hue",
+  "version": "1.0.0",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {},
+  "dependencies": {
+    "node-fetch": "^2.2.0",
+    "node-msg": "^1.2.3"
+  },
+  "devDependencies": {}
+}
