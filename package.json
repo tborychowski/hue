@@ -8,6 +8,7 @@
   },
   "scripts": {},
   "dependencies": {
+    "arg-parser": "^1.2.0",
     "node-fetch": "^2.2.0",
     "node-msg": "^1.2.3"
   },
