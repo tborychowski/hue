@@ -4,7 +4,7 @@
 
 ## [Getting started](https://www.developers.meethue.com/documentation/getting-started)
 
-1. Go to: https://<hue bridge IP>/debug/clip.html
+1. Go to: `https://<hue bridge IP>/debug/clip.html`
 2. Enter:
    - URL: `/api`
    - body: `{"devicetype":"my_hue_app#my_user"}`
