@@ -1,11 +1,6 @@
 node_modules/
-_stuff/
-public/
-tmp/
-
+src/data.csv
 
 .DS_Store
-*.log
-*.db
 
 config.json

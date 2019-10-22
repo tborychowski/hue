@@ -5,9 +5,38 @@ const Msg = require('node-msg');
 const Args = require('arg-parser');
 const config = require('./config.json');
 const fs = require('fs');
-const CSV_FILE = './data.csv';
+const path = require('path');
+const http = require('http');
+const CSV_FILE = path.resolve(__dirname, 'src/data.csv');
 
 
+function getTemp (str) {
+	let json;
+	try { json = JSON.parse(str); }
+	catch(e) {/* */}
+	if (json) return json.main.temp;
+	return '';
+}
+
+function getWeather (resp) {
+	const apiurl = 'http://api.openweathermap.org/data/2.5/weather';
+	const appid = 'afe9ed75c174bff3c0f900fe0c15f994';
+	const town = encodeURIComponent('Dublin, Ireland');
+	const url = `${apiurl}?appid=${appid}&units=metric&q=${town}`;
+	let str = '';
+	return new Promise((resolve, reject) => {
+		http
+			.request(url, res => {
+				res.on('data', function (chunk) { str += chunk; });
+				res.on('end', function () {
+					resp.outsideTemp = getTemp(str);
+					resolve(resp);
+				});
+			})
+			.on('error', reject)
+			.end();
+	});
+}
 
 function parseDate (str) {
 	const d = new Date(str);
@@ -60,21 +89,23 @@ function writeTable (r) {
 
 function writeCsv (r) {
 	if (!fs.existsSync(CSV_FILE)) {
-		const hdr = ['Date', ...r.map(s => s.name)].join(',') + '\n';
+		const hdr = ['Date', ...r.map(s => s.name), 'Outside temp'].join(',') + '\n';
 		fs.writeFileSync(CSV_FILE, hdr, 'utf8');
-		console.log(CSV_FILE + 'created');
+		console.log(CSV_FILE, 'created');
 	}
-	const line = [new Date().toISOString(), ...r.map(s => s.temp)].join(',') + '\n';
+	const line = [new Date().toISOString(), ...r.map(s => s.temp), r.outsideTemp].join(',') + '\n';
 	fs.appendFileSync(CSV_FILE, line, 'utf8');
-	console.log(CSV_FILE + 'updated');
+	console.log(CSV_FILE, 'updated');
 }
 
 
 function run (params) {
-	getTempSensors().then(r => {
-		if (params.csv) writeCsv(r);
-		else writeTable(r);
-	});
+	getTempSensors()
+		.then(getWeather)
+		.then(r => {
+			if (params.csv) writeCsv(r);
+			else writeTable(r);
+		});
 }
 
 
