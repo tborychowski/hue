@@ -9,7 +9,6 @@ const path = require('path');
 const http = require('http');
 const CSV_FILE = path.resolve(__dirname, 'src/data.csv');
 
-
 function getTemp (str) {
 	let json;
 	try { json = JSON.parse(str); }
@@ -21,7 +20,7 @@ function getTemp (str) {
 function getWeather (resp) {
 	const apiurl = 'http://api.openweathermap.org/data/2.5/weather';
 	const appid = 'afe9ed75c174bff3c0f900fe0c15f994';
-	const town = encodeURIComponent('Dublin, Ireland');
+	const town = encodeURIComponent(config.location || 'Dublin, Ireland');
 	const url = `${apiurl}?appid=${appid}&units=metric&q=${town}`;
 	let str = '';
 	return new Promise((resolve, reject) => {
@@ -83,6 +82,7 @@ function writeTable (r) {
 		return [name, temp, s.battery, presence, s.updated];
 	});
 	table.unshift(['Name', 'Temp', 'Battery', 'Presence', 'Updated']);
+	Msg.log('\nOutside temp: ' + r.outsideTemp + '°C\n');
 	Msg.table(table);
 }
 

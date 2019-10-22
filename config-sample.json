@@ -1,4 +1,5 @@
 {
 	"ip": "<ip of your hue bridge>",
-	"username": "<token>"
+	"username": "<token>",
+	"location": "Dublin, Ireland"
 }
