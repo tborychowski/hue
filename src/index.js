@@ -8,7 +8,14 @@ const config = {
 			xAxes: [{
 				type: 'time',
 				gridLines: { color: '#444' },
-				ticks: { fontColor: '#eee' }
+				ticks: { fontColor: '#eee' },
+				time: {
+					displayFormats: {
+						minute: 'HH:mm',
+						hour: 'HH:mm',
+						day: 'DD MMM, HH:mm'
+					}
+				}
 			}],
 			yAxes: [{
 				gridLines: { color: '#444' },
@@ -29,10 +36,10 @@ const config = {
 			caretSize: 10,
 			callbacks: {
 				title: tt => {
-					return new Date(tt[0].xLabel)
-						.toISOString()
-						.replace('T', '  ')
-						.substr(0, 17);
+					const d = new Date(tt[0].xLabel);
+					const dat = d.toISOString().substr(0, 10);
+					const time = d.toLocaleTimeString().substr(0, 5);
+					return `${dat}  ${time}`;
 				},
 				label: (tt, data) => {
 					const label = data.datasets[tt.datasetIndex].label || '';
