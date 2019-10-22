@@ -1,8 +1,47 @@
-const colors = ['green', 'blue', 'red', 'pink', 'yellow', 'brown', 'purple'];
+const colors = ['#59a859', '#5797d0', '#ae5252', '#acac49', '#b9629b', '#34a892'];
 const config = {
 	type: 'line',
-	options: {scales: {xAxes: [{type: 'time'}]}},
 	data: {labels: [], datasets: [] },
+	options: {
+		legend: { labels: { fontSize: 14, padding: 40, boxWidth: 16, fontColor: '#eee' } },
+		scales: {
+			xAxes: [{
+				type: 'time',
+				gridLines: { color: '#444' },
+				ticks: { fontColor: '#eee' }
+			}],
+			yAxes: [{
+				gridLines: { color: '#444' },
+				ticks: { fontColor: '#eee', callback: value => Math.round(value) + '°C' }
+			}]
+		},
+		tooltips: {
+			intersect: false,
+			mode: 'index',
+
+			titleMarginBottom: 12,
+			bodySpacing: 10,
+			footerSpacing: 30,
+
+			titleFontSize: 15,
+			bodyFontSize: 15,
+			footerFontSize: 15,
+			caretSize: 10,
+			callbacks: {
+				title: tt => {
+					return new Date(tt[0].xLabel)
+						.toISOString()
+						.replace('T', '  ')
+						.substr(0, 17);
+				},
+				label: (tt, data) => {
+					const label = data.datasets[tt.datasetIndex].label || '';
+					let val = Math.round(tt.yLabel * 100) / 100 + '°C';
+					return ` ${label} ${val}`;
+				},
+			}
+		}
+	},
 };
 let chart;
 
@@ -17,7 +56,15 @@ function parseData (text) {
 
 	json.datasets = lines.shift().split(',')
 		.filter(l => l !== 'Date')
-		.map((label, i) => ({label, borderColor: colors[i], fill: false, data: []}));
+		.map(l => { l = l.replace(' sensor', '').replace(' temp', ''); return l; })
+		.map((label, i) => ({
+			label,
+			borderColor: colors[i],
+			backgroundColor: colors[i],
+			borderWidth: 1,
+			fill: false,
+			data: []
+		}));
 
 	lines.forEach((line, l) => {
 		const [date, ...data] = line.split(',');
