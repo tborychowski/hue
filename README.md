@@ -10,17 +10,16 @@
    - body: `{"devicetype":"my_hue_app#my_user"}`
 3. Before sending - press the button on the hue bridge
 4. Click `POST`
-5. Make note of the username (e.g. `1028d66426293e821ecfd9ef1a0731df`)
-6. Enter username and bridge IP in the config
-7. Create `config.json`:
+5. Copy username (e.g. `1028d66426293e821ecfd9ef1a0731df`) to the config file
+6. Create `config.json`:
     ```json
-    { "ip": "<hue bridge IP>", "username": "<token>", "location": "<city, country>" }
+    { "ip": "<hue bridge IP>", "username": "<username>", "location": "<city, country>" }
 	```
-8. Add cronjob to run e.g. every hour:
+7. Add cronjob to run e.g. every hour:
     ```sh
 	    0 * * * * /path/to/script/index.js -c
 	```
-9. Open `http://localhost/hue/index.html` in browser (requires a server)
+8. Open `http://localhost/hue/index.html` in browser (requires a server)
 
 
 ## Links
