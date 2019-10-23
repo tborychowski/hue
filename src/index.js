@@ -12,7 +12,7 @@ const config = {
 				time: {
 					displayFormats: {
 						minute: 'HH:mm',
-						hour: 'HH:mm',
+						hour: 'ddd HH:mm',
 						day: 'DD MMM, HH:mm'
 					}
 				}
