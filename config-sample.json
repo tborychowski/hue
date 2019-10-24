@@ -1,5 +1,6 @@
 {
 	"ip": "<ip of your hue bridge>",
 	"username": "<token>",
-	"location": "Dublin, Ireland"
+	"location": "Dublin, Ireland",
+	"weather_appid": "<app_id token>"
 }

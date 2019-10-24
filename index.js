@@ -1,40 +1,29 @@
 #!/usr/bin/env node
 
+const chalk = require('chalk');
 const fetch = require('node-fetch');
 const Msg = require('node-msg');
 const Args = require('arg-parser');
 const config = require('./config.json');
 const fs = require('fs');
 const path = require('path');
-const http = require('http');
 const CSV_FILE = path.resolve(__dirname, 'src/data.csv');
 
-function getTemp (str) {
-	let json;
-	try { json = JSON.parse(str); }
-	catch(e) {/* */}
-	if (json) return json.main.temp;
-	return '';
-}
+const error = msg => console.error(chalk.red(msg));
 
-function getWeather (resp) {
+function getWeather (resp = {}) {
 	const apiurl = 'http://api.openweathermap.org/data/2.5/weather';
-	const appid = 'afe9ed75c174bff3c0f900fe0c15f994';
+	const appid = config.weather_appid;
 	const town = encodeURIComponent(config.location || 'Dublin, Ireland');
 	const url = `${apiurl}?appid=${appid}&units=metric&q=${town}`;
-	let str = '';
-	return new Promise((resolve, reject) => {
-		http
-			.request(url, res => {
-				res.on('data', function (chunk) { str += chunk; });
-				res.on('end', function () {
-					resp.outsideTemp = getTemp(str);
-					resolve(resp);
-				});
-			})
-			.on('error', reject)
-			.end();
-	});
+
+	return fetch(url, { timeout: 1000 })
+		.then(r => r.json())
+		.then(r => {
+			resp.outsideTemp = r.main.temp;
+			return resp;
+		})
+		.catch(() => error('Weather API is not available'));
 }
 
 function parseDate (str) {
@@ -68,9 +57,10 @@ function parseSensors (res) {
 
 function getTempSensors () {
 	const url = `http://${config.ip}/api/${config.username}/sensors`;
-	return fetch(url)
+	return fetch(url, { timeout: 1000 })
 		.then(r => r.json())
-		.then(parseSensors);
+		.then(parseSensors)
+		.catch(() => error('Sensors are not available in your network'));
 }
 
 
@@ -103,13 +93,15 @@ function run (params) {
 	getTempSensors()
 		.then(getWeather)
 		.then(r => {
+			if (!r) return;
 			if (params.csv) writeCsv(r);
 			else writeTable(r);
-		});
+		})
+		.catch(() => {});
 }
 
 
 
-const args = new Args('hue', '1.0', 'Philips Hue temperature sensor reader');
+const args = new Args('hue', '1.0', 'Philips Hue temperature sensor logger');
 args.add({ name: 'csv', desc: 'save data to csv', switches: [ '-c', '--csv'] });
 if (args.parse()) run(args.params);
