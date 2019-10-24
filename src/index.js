@@ -51,6 +51,7 @@ const config = {
 	},
 };
 let chart;
+const LIMIT = 168;    // should be 7 days, with 1h stams
 
 function fetchData () {
 	return fetch('src/data.csv').then(res => res.text());
@@ -58,10 +59,12 @@ function fetchData () {
 
 
 function parseData (text) {
+	const json = {labels: [], datasets: []};
 	const lines = text.split('\n').filter(l => !!l);
-	let json = {labels: [], datasets: []};
 
-	json.datasets = lines.shift().split(',')
+	const header = lines.shift();
+
+	json.datasets = header.split(',')
 		.filter(l => l !== 'Date')
 		.map(l => { l = l.replace(' sensor', '').replace(' temp', ''); return l; })
 		.map((label, i) => ({
@@ -73,7 +76,7 @@ function parseData (text) {
 			data: []
 		}));
 
-	lines.forEach((line, l) => {
+	lines.slice(-LIMIT).forEach((line, l) => {
 		const [date, ...data] = line.split(',');
 		json.labels[l] = new Date(date);
 		json.datasets.forEach((set, s) => {
