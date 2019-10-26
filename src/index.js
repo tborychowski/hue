@@ -33,6 +33,8 @@ function drawChart (series) {
 		],
 		series,
 	};
+
+	window.Highcharts.setOptions({ global: { useUTC: false } });
 	window.Highcharts.stockChart('chart', config);
 }
 
