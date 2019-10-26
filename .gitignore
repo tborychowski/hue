@@ -1,6 +1,8 @@
-node_modules/
-src/data.csv
-
 .DS_Store
 
+node_modules/
+
 config.json
+
+src/data.csv
+src/data.log

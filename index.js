@@ -8,6 +8,7 @@ const config = require('./config.json');
 const fs = require('fs');
 const path = require('path');
 const CSV_FILE = path.resolve(__dirname, 'src/data.csv');
+const LOG_FILE = path.resolve(__dirname, 'src/data.log');
 
 const error = msg => console.error(chalk.red(msg));
 
@@ -77,15 +78,21 @@ function writeTable (r) {
 }
 
 
-function writeCsv (r) {
+function writeCsv (r, params) {
 	if (!fs.existsSync(CSV_FILE)) {
 		const hdr = ['Date', ...r.map(s => s.name), 'Outside temp'].join(',') + '\n';
 		fs.writeFileSync(CSV_FILE, hdr, 'utf8');
 		console.log(CSV_FILE, 'created');
 	}
-	const line = [new Date().toISOString(), ...r.map(s => s.temp), r.outsideTemp].join(',') + '\n';
-	fs.appendFileSync(CSV_FILE, line, 'utf8');
-	console.log(CSV_FILE, 'updated');
+	const line = [new Date().toISOString(), ...r.map(s => s.temp), r.outsideTemp].join(',');
+	fs.appendFileSync(CSV_FILE, line + '\n', 'utf8');
+	const [m, d, y] = (new Date()).toLocaleDateString().split('/');
+	const  D = `${y}-${m}-${d}`;
+	const T = (new Date()).toLocaleTimeString();
+	const f = CSV_FILE.split('/').pop();
+	const log = `[${D} ${T}] Added "${line}" to "${f}"`;
+	if (!params.log) console.log(log);
+	else fs.appendFileSync(LOG_FILE, log + '\n', 'utf8');
 }
 
 
@@ -94,7 +101,7 @@ function run (params) {
 		.then(getWeather)
 		.then(r => {
 			if (!r) return;
-			if (params.csv) writeCsv(r);
+			if (params.csv) writeCsv(r, params);
 			else writeTable(r);
 		})
 		.catch(() => {});
@@ -104,4 +111,5 @@ function run (params) {
 
 const args = new Args('hue', '1.0', 'Philips Hue temperature sensor logger');
 args.add({ name: 'csv', desc: 'save data to csv', switches: [ '-c', '--csv'] });
+args.add({ name: 'log', desc: 'maintain a log file for csv operations', switches: [ '-l', '--log'] });
 if (args.parse()) run(args.params);
