@@ -23,7 +23,17 @@ function drawChart (series) {
 	const config = {
 		scrollbar: { enabled: false },
 		credits: { enabled: false },
-		rangeSelector: { enabled: false },
+		rangeSelector: {
+			buttonPosition: { align: 'right', x: -23, y: 2 },
+			selected: 1,
+			inputEnabled: false,
+			buttons: [
+				{ type: 'day', text: '1D' },
+				{ type: 'week', text: '1W' },
+				{ type: 'month', text: '1M' },
+				{ type: 'all', text: 'All' }
+			]
+		},
 		chart: { style: { fontFamily: 'sans-serif' } },
 		legend: { enabled: true, align: 'center', verticalAlign: 'top', floating: false },
 		tooltip: { valueSuffix: '°C' },
