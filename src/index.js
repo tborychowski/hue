@@ -25,7 +25,7 @@ function drawChart (series) {
 		credits: { enabled: false },
 		rangeSelector: {
 			buttonPosition: { align: 'right', x: -23, y: 2 },
-			selected: 1,
+			selected: 0,
 			inputEnabled: false,
 			buttons: [
 				{ type: 'day', text: '1D' },
